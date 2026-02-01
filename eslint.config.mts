@@ -1,37 +1,39 @@
-import js from "@eslint/js";
-import globals from "globals";
-import tseslint from "typescript-eslint";
-import json from "@eslint/json";
-import markdown from "@eslint/markdown";
-import { defineConfig, globalIgnores } from "eslint/config";
-import playwright from "eslint-plugin-playwright";
+import js from '@eslint/js';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
+import json from '@eslint/json';
+import markdown from '@eslint/markdown';
+import { defineConfig, globalIgnores } from 'eslint/config';
+import playwright from 'eslint-plugin-playwright';
+import prettierPlugin from 'eslint-plugin-prettier/recommended';
 
 export default defineConfig([
-  globalIgnores(["package-lock.json"]),
+  globalIgnores(['package-lock.json', 'build', 'coverage', 'node_modules']),
   {
-    files: ["**/*.{js,mjs,cjs,ts,mts,cts}"],
+    files: ['**/*.{js,mjs,cjs,ts,mts,cts}'],
     plugins: { js },
-    extends: ["js/recommended"],
+    extends: ['js/recommended'],
     languageOptions: { globals: { ...globals.browser, ...globals.node } },
   },
   tseslint.configs.recommended,
   {
-    files: ["**/*.json"],
+    files: ['**/*.json'],
     plugins: { json },
-    language: "json/json",
-    extends: ["json/recommended"],
+    language: 'json/json',
+    extends: ['json/recommended'],
   },
   {
-    files: ["**/*.md"],
+    files: ['**/*.md'],
     plugins: { markdown },
-    language: "markdown/gfm",
-    extends: ["markdown/recommended"],
+    language: 'markdown/gfm',
+    extends: ['markdown/recommended'],
   },
   {
-    ...playwright.configs["flat/recommended"],
-    files: ["tests/**"],
+    ...playwright.configs['flat/recommended'],
+    files: ['tests/**'],
     rules: {
-      ...playwright.configs["flat/recommended"].rules,
+      ...playwright.configs['flat/recommended'].rules,
     },
   },
+  prettierPlugin,
 ]);
