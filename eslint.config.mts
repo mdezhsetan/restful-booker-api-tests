@@ -8,7 +8,14 @@ import playwright from 'eslint-plugin-playwright';
 import prettierPlugin from 'eslint-plugin-prettier/recommended';
 
 export default defineConfig([
-  globalIgnores(['package-lock.json', 'build', 'coverage', 'node_modules']),
+  globalIgnores([
+    'package-lock.json',
+    'build',
+    'coverage',
+    'node_modules',
+    'playwright-report',
+    'test-results',
+  ]),
   {
     files: ['**/*.{js,mjs,cjs,ts,mts,cts}'],
     plugins: { js },
