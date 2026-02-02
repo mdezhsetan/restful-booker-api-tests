@@ -10,8 +10,19 @@ export async function createApiContext(): Promise<APIRequestContext> {
   });
 }
 
-export function tokenCookie(token: string) {
-  return { Cookie: `token=${token}` };
+export async function login() {
+  const api = await createApiContext();
+
+  const authRes = await api.post('/auth', {
+    data: {
+      username: process.env.VALID_USER_NAME,
+      password: process.env.VALID_PASSWORD,
+    },
+  });
+  expect(authRes.status()).toBe(200);
+  const authBody = await authRes.json();
+  const token = authBody.token;
+  return token;
 }
 
 export async function expectJson(res: {
