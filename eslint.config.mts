@@ -42,5 +42,8 @@ export default defineConfig([
       ...playwright.configs['flat/recommended'].rules,
     },
   },
-  prettierPlugin,
+  {
+    files: ['**/*.{js,mjs,cjs,ts,mts,cts}'],
+    ...prettierPlugin,
+  },
 ]);

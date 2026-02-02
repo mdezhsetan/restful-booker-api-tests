@@ -15,6 +15,10 @@ export default defineConfig({
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'on-first-retry',
+    extraHTTPHeaders: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
   },
   projects: [
     {
