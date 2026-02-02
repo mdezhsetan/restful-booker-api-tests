@@ -10,9 +10,9 @@ export async function createApiContext(): Promise<APIRequestContext> {
   });
 }
 
-export async function login() {
-  const api = await createApiContext();
-
+export async function getTokenCookie(
+  api: APIRequestContext,
+): Promise<{ [key: string]: string }> {
   const authRes = await api.post('/auth', {
     data: {
       username: process.env.VALID_USER_NAME,
@@ -22,13 +22,5 @@ export async function login() {
   expect(authRes.status()).toBe(200);
   const authBody = await authRes.json();
   const token = authBody.token;
-  return token;
-}
-
-export async function expectJson(res: {
-  headers: () => Promise<Record<string, string>>;
-}) {
-  const headers = await res.headers();
-  const ct = headers['content-type']?.toLowerCase() ?? '';
-  expect(ct).toContain('application/json');
+  return { Cookie: `token=${token}` };
 }
