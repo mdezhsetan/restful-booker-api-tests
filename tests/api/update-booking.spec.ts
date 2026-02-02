@@ -39,10 +39,11 @@ test('updates booking with valid token and only changes intended fields', async 
     firstname: 'UpdatedName',
     totalprice: 999,
   };
-
+  const tokenCookie = await getTokenCookie(api);
   const updateRes = await api.put(`/booking/${bookingId}`, {
     data: updatePayload,
-    headers: await getTokenCookie(api),
+
+    headers: tokenCookie,
   });
 
   expect(updateRes.status()).toBe(200); // 201 would be better

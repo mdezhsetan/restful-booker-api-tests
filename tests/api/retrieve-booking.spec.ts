@@ -33,8 +33,7 @@ test('retrieves existing booking by id', async () => {
   expect(res.status()).toBe(200);
 
   const body = await res.json();
-
-  expect(body.booking).toEqual({
+  expect(body).toEqual({
     firstname: payload.firstname,
     lastname: payload.lastname,
     totalprice: payload.totalprice,
