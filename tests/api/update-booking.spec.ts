@@ -1,19 +1,6 @@
 import { test, expect, APIRequestContext } from '@playwright/test';
 import { createApiContext, getTokenCookie } from './client';
-
-function validBookingPayload() {
-  return {
-    firstname: 'Mahi',
-    lastname: 'Tester',
-    totalprice: 300,
-    depositpaid: true,
-    bookingdates: {
-      checkin: '2026-05-01',
-      checkout: '2026-05-04',
-    },
-    additionalneeds: 'Dinner',
-  };
-}
+import { validBookingPayload } from '../test-data';
 
 async function createBooking(api: APIRequestContext) {
   const res = await api.post('/booking', {

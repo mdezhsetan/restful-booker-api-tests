@@ -1,0 +1,13 @@
+export function validBookingPayload() {
+  return {
+    firstname: 'Mahi',
+    lastname: 'Tester',
+    totalprice: 150,
+    depositpaid: true,
+    bookingdates: {
+      checkin: '2026-03-01',
+      checkout: '2026-03-05',
+    },
+    additionalneeds: 'Breakfast',
+  };
+}
