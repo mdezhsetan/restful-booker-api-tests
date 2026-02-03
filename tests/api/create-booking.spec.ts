@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { createApiContext } from './client';
 import { validBookingPayload } from '../test-data';
 
-test('creates booking with valid payload', async () => {
+test('creates booking with valid payload @booking @positive @smoke', async () => {
   const api = await createApiContext();
   const payload = validBookingPayload();
 
@@ -26,7 +26,7 @@ test('creates booking with valid payload', async () => {
   });
 });
 
-test('creates booking with valid payload variation', async () => {
+test('creates booking with valid payload variation @booking @positive', async () => {
   const api = await createApiContext();
 
   const payload = {
@@ -47,7 +47,7 @@ test('creates booking with valid payload variation', async () => {
   expect(body.booking.additionalneeds).toBe('Late Checkout');
 });
 
-test('rejects malformed JSON body', async () => {
+test('rejects malformed JSON body @booking @negative', async () => {
   const api = await createApiContext();
 
   const res = await api.post('/booking', {
@@ -57,7 +57,7 @@ test('rejects malformed JSON body', async () => {
   expect(res.status()).toBe(400);
 });
 
-test('rejects invalid schema (missing firstname)', async () => {
+test('rejects invalid schema (missing firstname) @booking @negative', async () => {
   const api = await createApiContext();
 
   const payload = validBookingPayload();
@@ -66,4 +66,38 @@ test('rejects invalid schema (missing firstname)', async () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const res = await api.post('/booking', { data: payload });
   // expect(res.status()).toBe(400); ==> currently returns 500
+});
+
+test('creates booking without authentication token @booking @security', async () => {
+  const api = await createApiContext();
+  const payload = validBookingPayload();
+
+  // POST /booking should not require authentication
+  const res = await api.post('/booking', { data: payload });
+
+  expect(res.status()).toBe(200); // Booking creation is public, no auth needed
+  const body = await res.json();
+  expect(typeof body.bookingid).toBe('number');
+});
+
+test('handles very long values safely @security', async () => {
+  const api = await createApiContext();
+  const longValue = 'A'.repeat(5000);
+
+  const payload = {
+    ...validBookingPayload(),
+    firstname: longValue,
+    lastname: longValue,
+    additionalneeds: longValue,
+  };
+
+  const res = await api.post('/booking', { data: payload });
+  const status = res.status();
+
+  expect([200, 400, 413]).toContain(status);
+
+  if (status === 200) {
+    const body = await res.json();
+    expect(typeof body.bookingid).toBe('number');
+  }
 });

@@ -1,4 +1,5 @@
 import { APIRequestContext, expect, request } from '@playwright/test';
+import { validBookingPayload } from '../test-data';
 
 export async function createApiContext(): Promise<APIRequestContext> {
   return request.newContext({
@@ -23,4 +24,15 @@ export async function getTokenCookie(
   const authBody = await authRes.json();
   const token = authBody.token;
   return { Cookie: `token=${token}` };
+}
+
+export async function createBooking(api: APIRequestContext): Promise<number> {
+  const res = await api.post('/booking', {
+    data: validBookingPayload(),
+  });
+
+  expect(res.status()).toBe(200); // 201 Created would be better
+
+  const body = await res.json();
+  return body.bookingid as number;
 }

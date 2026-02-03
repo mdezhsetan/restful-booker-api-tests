@@ -1,21 +1,14 @@
-import { test, expect, APIRequestContext } from '@playwright/test';
-import { createApiContext } from './client';
+import { test, expect } from '@playwright/test';
+import { createApiContext, createBooking } from './client';
 import { validBookingPayload } from '../test-data';
 
-async function createBooking(api: APIRequestContext) {
-  const res = await api.post('/booking', { data: validBookingPayload() });
-  expect(res.status()).toBe(200); // 201 Created would be better
-  const body = await res.json();
-  return body as { bookingid: number; booking: object };
-}
-
-test('retrieves existing booking by id', async () => {
+test('retrieves existing booking by id @booking @positive', async () => {
   const api = await createApiContext();
   const payload = validBookingPayload();
 
-  const booking = await createBooking(api);
+  const bookingId = await createBooking(api);
 
-  const res = await api.get(`/booking/${booking.bookingid}`);
+  const res = await api.get(`/booking/${bookingId}`);
 
   expect(res.status()).toBe(200);
 
@@ -33,12 +26,12 @@ test('retrieves existing booking by id', async () => {
   }); // Id is missing form the response body
 });
 
-test('retrieves booking with explicit Accept header', async () => {
+test('retrieves booking with explicit Accept header @booking @positive', async () => {
   const api = await createApiContext();
 
-  const booking = await createBooking(api);
+  const bookingId = await createBooking(api);
 
-  const res = await api.get(`/booking/${booking.bookingid}`, {
+  const res = await api.get(`/booking/${bookingId}`, {
     headers: { Accept: 'application/xml' },
   });
 
@@ -49,7 +42,7 @@ test('retrieves booking with explicit Accept header', async () => {
   expect(body).toContain('<firstname>Mahi</firstname>');
 });
 
-test('returns not found for non-existing booking id', async () => {
+test('returns not found for non-existing booking id @booking @negative', async () => {
   const api = await createApiContext();
 
   const nonExistingId = 999999999999;
@@ -59,7 +52,7 @@ test('returns not found for non-existing booking id', async () => {
   expect(res.status()).toBe(404);
 });
 
-test('handles invalid id format safely', async () => {
+test('handles invalid id format safely @booking @negative', async () => {
   const api = await createApiContext();
 
   const res = await api.get(`/booking/abc`);
@@ -67,4 +60,17 @@ test('handles invalid id format safely', async () => {
 
   const res2 = await api.get(`/booking/-1`);
   expect(res2.status()).toBe(404);
+});
+
+test('checks rate limit behavior under burst load @security @rate-limit', async () => {
+  const api = await createApiContext();
+
+  const requests = Array.from({ length: 30 }, () => api.get('/booking'));
+  const responses = await Promise.all(requests);
+  const statuses = responses.map((res) => res.status());
+
+  const allAllowed = statuses.every(
+    (status) => status === 200 || status === 429,
+  );
+  expect(allAllowed).toBe(true);
 });

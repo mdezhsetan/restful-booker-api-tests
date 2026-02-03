@@ -1,20 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { createApiContext, getTokenCookie } from './client';
-import { APIRequestContext } from '@playwright/test';
-import { validBookingPayload } from '../test-data';
+import { createApiContext, getTokenCookie, createBooking } from './client';
 
-async function createBooking(api: APIRequestContext) {
-  const res = await api.post('/booking', {
-    data: validBookingPayload(),
-  });
-
-  expect(res.status()).toBe(200); // 201 Created would be better
-
-  const body = await res.json();
-  return body.bookingid as number;
-}
-
-test('deletes booking with valid token and makes it inaccessible', async () => {
+test('deletes booking with valid token and makes it inaccessible @booking @positive', async () => {
   const api = await createApiContext();
 
   const bookingId = await createBooking(api);
@@ -32,7 +19,7 @@ test('deletes booking with valid token and makes it inaccessible', async () => {
   expect(getRes.status()).toBe(404);
 });
 
-test('rejects delete without authentication', async () => {
+test('rejects delete without authentication @booking @security @negative', async () => {
   const api = await createApiContext();
 
   const bookingId = await createBooking(api);
@@ -46,7 +33,7 @@ test('rejects delete without authentication', async () => {
   expect(getRes.status()).toBe(200);
 });
 
-test('rejects delete with invalid token', async () => {
+test('rejects delete with invalid token @booking @security @negative', async () => {
   const api = await createApiContext();
 
   const bookingId = await createBooking(api);

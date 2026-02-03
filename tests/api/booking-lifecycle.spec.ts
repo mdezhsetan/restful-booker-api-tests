@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { createApiContext, getTokenCookie } from './client';
 import { validBookingPayload } from '../test-data';
 
-test('auth → create → get → update → get → delete → verify deleted', async () => {
+test('auth → create → get → update → get → delete → verify deleted @e2e @smoke', async () => {
   const api = await createApiContext();
 
   // 1️ AUTH

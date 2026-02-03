@@ -1,19 +1,7 @@
-import { test, expect, APIRequestContext } from '@playwright/test';
-import { createApiContext, getTokenCookie } from './client';
-import { validBookingPayload } from '../test-data';
+import { test, expect } from '@playwright/test';
+import { createApiContext, getTokenCookie, createBooking } from './client';
 
-async function createBooking(api: APIRequestContext) {
-  const res = await api.post('/booking', {
-    data: validBookingPayload(),
-  });
-
-  expect(res.status()).toBe(200); // 201 Created would be better
-
-  const body = await res.json();
-  return body.bookingid;
-}
-
-test('updates booking with valid token and only changes intended fields', async () => {
+test('updates booking with valid token and only changes intended fields @booking @positive', async () => {
   const api = await createApiContext();
 
   const bookingId = await createBooking(api);
@@ -44,7 +32,7 @@ test('updates booking with valid token and only changes intended fields', async 
   });
 });
 
-test('rejects update without authentication', async () => {
+test('rejects update without authentication @booking @security @negative', async () => {
   const api = await createApiContext();
 
   const bookingId = await createBooking(api);
@@ -69,7 +57,7 @@ test('rejects update without authentication', async () => {
   expect(after.firstname).toBe(original.firstname);
 });
 
-test('rejects update with invalid token', async () => {
+test('rejects update with invalid token @booking @security @negative', async () => {
   const api = await createApiContext();
 
   const bookingId = await createBooking(api);

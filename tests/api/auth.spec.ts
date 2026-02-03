@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { createApiContext } from './client';
 
-test('valid credentials returns token', async () => {
+test('valid credentials returns token @auth @positive @smoke', async () => {
   const api = await createApiContext();
   const res = await api.post('/auth', {
     data: {
@@ -16,7 +16,7 @@ test('valid credentials returns token', async () => {
   expect(body.token.length).toBeGreaterThan(0);
 });
 
-test('rejects invalid credentials (no token)', async () => {
+test('rejects invalid credentials (no token) @auth @negative @security', async () => {
   const api = await createApiContext();
   const res = await api.post('/auth', {
     data: { username: process.env.VALID_USER_NAME, password: 'wrong' },
